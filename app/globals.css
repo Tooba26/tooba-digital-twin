@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/*
+  Tokens. The interface itself is monochrome porcelain + ink.
+  Colour is spent in one place: the aurora orb and the small domain dots,
+  one hue per research area (rose = EdTech, saffron = vision, jade = language, indigo = product).
+*/
+:root {
+  --bg: #eef0f4;
+  --surface: #ffffff;
+  --surface-2: #f6f7fa;
+  --ink: #14161c;
+  --ink-2: #3a3f4b;
+  --muted: #5b6170;
+  --line: #dcdfe6;
+  --line-strong: #c6cad3;
+  --focus: #14161c;
+
+  --c-rose: #e8618c;
+  --c-saffron: #e8a317;
+  --c-jade: #12a594;
+  --c-indigo: #5b5bd6;
+
+  --shadow-card: 0 1px 2px rgb(20 22 28 / 0.04), 0 8px 24px -12px rgb(20 22 28 / 0.12);
+  --shadow-float: 0 2px 6px rgb(20 22 28 / 0.06), 0 24px 48px -24px rgb(20 22 28 / 0.28);
+}
+
+[data-theme="dark"] {
+  --bg: #0d0e12;
+  --surface: #16181e;
+  --surface-2: #1c1f26;
+  --ink: #eceef3;
+  --ink-2: #c3c7d1;
+  --muted: #9298a6;
+  --line: #262a33;
+  --line-strong: #353a45;
+  --focus: #eceef3;
+
+  --c-rose: #f07ea2;
+  --c-saffron: #f2b53d;
+  --c-jade: #2cc4b1;
+  --c-indigo: #8b8cf0;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+  --shadow-float: 0 2px 6px rgb(0 0 0 / 0.3), 0 24px 48px -24px rgb(0 0 0 / 0.7);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-rose: var(--c-rose);
+  --color-saffron: var(--c-saffron);
+  --color-jade: var(--c-jade);
+  --color-indigo: var(--c-indigo);
+  --font-sans: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+  --shadow-card: var(--shadow-card);
+  --shadow-float: var(--shadow-float);
+}
+
+html {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+body { background: var(--bg); min-height: 100dvh; }
+
+::selection { background: var(--ink); color: var(--bg); }
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 10px;
+  }
+  button, a, [role="button"] { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+}
+
+.serif { font-family: var(--font-serif); font-weight: 400; letter-spacing: -0.01em; }
+
+/* faint dot field behind everything, gives depth without decoration */
+.dot-field {
+  background-image: radial-gradient(var(--line-strong) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 20%, transparent 75%);
+  opacity: 0.55;
+}
+
+/* ─── Aurora orb ─────────────────────────────────────────── */
+.orb {
+  --speed: 14s;
+  position: relative;
+  border-radius: 9999px;
+  isolation: isolate;
+}
+.orb[data-state="thinking"] { --speed: 3.2s; }
+.orb__aura {
+  position: absolute;
+  inset: -18%;
+  border-radius: inherit;
+  background: conic-gradient(from 0deg, var(--c-rose), var(--c-saffron), var(--c-jade), var(--c-indigo), var(--c-rose));
+  filter: blur(22px);
+  opacity: 0.55;
+  animation: orb-spin var(--speed) linear infinite;
+  z-index: -1;
+}
+.orb[data-state="thinking"] .orb__aura { opacity: 0.85; }
+.orb__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 3px;
+  background: conic-gradient(from 90deg, var(--c-rose), var(--c-saffron), var(--c-jade), var(--c-indigo), var(--c-rose));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: orb-spin calc(var(--speed) * 1.6) linear infinite reverse;
+}
+.orb__core {
+  position: absolute;
+  inset: 3px;
+  border-radius: inherit;
+  overflow: hidden;
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  animation: orb-breathe calc(var(--speed) / 2.5) ease-in-out infinite;
+}
+@keyframes orb-spin { to { transform: rotate(360deg); } }
+@keyframes orb-breathe { 50% { transform: scale(0.965); } }
+
+/* typing indicator */
+.dot { animation: dot 1.2s ease-in-out infinite; }
+.dot:nth-child(2) { animation-delay: 0.15s; }
+.dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes dot { 0%, 60%, 100% { transform: translateY(0); opacity: 0.35; } 30% { transform: translateY(-4px); opacity: 1; } }
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
